@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import pandas as pd
+import time
 
 
 def get_soup(url):
@@ -40,8 +41,10 @@ def main(symbol):
     for page in range(1, max_page + 1):
         for item in parse_page(base_url + '?page=%s' % page):
             output.append(item)
+        print page
+        time.sleep(5)
     df = pd.DataFrame.from_records(output, columns=['owner_code', 'date', 'held_shares', 'change'])
-    df.to_csv('%s.txt' % symbol, sep='\t')
+    df.to_csv('%s.txt' % symbol, sep='\t', index=False)
 
 
 main('baba')
