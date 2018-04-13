@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import datetime
 import pandas as pd
 import time
+from retrying import retry
 
 
 def get_soup(url):
@@ -20,6 +21,7 @@ def get_max_page(base_url):
     return max(pages)
 
 
+@retry(stop_max_attempt_number=5)
 def parse_page(url):
     soup = get_soup(url)
     table = soup.find_all('table')[8]
@@ -37,14 +39,18 @@ def parse_page(url):
 def main(symbol):
     base_url = 'https://www.nasdaq.com/symbol/%s/institutional-holdings' % symbol
     max_page = get_max_page(base_url)
+    print 'Total: %s' % max_page
     output = []
     for page in range(1, max_page + 1):
-        for item in parse_page(base_url + '?page=%s' % page):
-            output.append(item)
+        try:
+            for item in parse_page(base_url + '?page=%s' % page):
+                output.append(item)
+        except:
+            continue
         print page
-        time.sleep(5)
+        time.sleep(2)
     df = pd.DataFrame.from_records(output, columns=['owner_code', 'date', 'held_shares', 'change'])
     df.to_csv('%s.txt' % symbol, sep='\t', index=False)
 
 
-main('baba')
+main('aapl')
