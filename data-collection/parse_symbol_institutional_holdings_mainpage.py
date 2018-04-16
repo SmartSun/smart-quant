@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 def get_soup(url):
     res = requests.get(url)
-    return BeautifulSoup(res.content, 'lxml')
+    return BeautifulSoup(res.content, 'html.parser')
 
 
 def get_max_page(base_url):
