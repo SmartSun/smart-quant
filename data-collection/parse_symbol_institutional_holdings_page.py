@@ -9,7 +9,7 @@ from retrying import retry
 
 def get_soup(url):
     res = requests.get(url)
-    return BeautifulSoup(res.content, 'lxml')
+    return BeautifulSoup(res.content, 'html.parser')
 
 
 @retry(stop_max_attempt_number=5)
@@ -24,7 +24,7 @@ def parse_page(url):
         date = str(datetime.datetime.strptime(tds[1].text, '%m/%d/%Y').date())
         held_share = int(tds[2].text.replace(',', ''))
         change = int(tds[3].text.replace(',', '').replace(')', '').replace('(', '-'))
-        yield (owner_code, date, held_share, change)
+        yield (owner_code, date, str(held_share), str(change))
 
 
 def lambda_handler(event, context):
