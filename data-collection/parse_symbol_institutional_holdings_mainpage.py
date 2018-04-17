@@ -2,13 +2,7 @@ from __future__ import print_function
 
 import json
 import boto3
-import requests
-from bs4 import BeautifulSoup
-
-
-def get_soup(url):
-    res = requests.get(url)
-    return BeautifulSoup(res.content, 'html.parser')
+from common_funcs import get_soup
 
 
 def get_max_page(base_url):
@@ -21,10 +15,8 @@ def get_max_page(base_url):
     return max(pages)
 
 
-def lambda_handler(event, context):
+def main(symbol):
     sns = boto3.client('sns')
-    # print("Received event: " + json.dumps(event, indent=2))
-    symbol = event['Records'][0]['Sns']['Message']
     base_url = 'https://www.nasdaq.com/symbol/%s/institutional-holdings' % symbol
     max_page = get_max_page(base_url)
     arn = 'arn:aws:sns:us-east-1:602379591537:smart-quant-institutional-holdings-url'

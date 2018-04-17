@@ -1,15 +1,9 @@
 import boto3
-import requests
 import json
 import uuid
-from bs4 import BeautifulSoup
 import datetime
 from retrying import retry
-
-
-def get_soup(url):
-    res = requests.get(url)
-    return BeautifulSoup(res.content, 'html.parser')
+from common_funcs import get_soup
 
 
 @retry(stop_max_attempt_number=5)

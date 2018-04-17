@@ -1,4 +1,5 @@
 import boto3
+import json
 
 
 def get_symbol_list():
@@ -8,12 +9,13 @@ def get_symbol_list():
 
 
 def lambda_handler(event, context):
-    # TODO implement
+    date = event['date']
+    scraping_type = event['type']
     sns = boto3.client('sns')
     arn = 'arn:aws:sns:us-east-1:602379591537:smart-quant-symbol'
     symbol_list = filter(None, get_symbol_list())
     for symbol in symbol_list:
         sns.publish(
             TargetArn=arn,
-            Message=symbol
+            Message=json.dumps({'symbol': symbol, 'date': date, 'type': scraping_type})
         )
