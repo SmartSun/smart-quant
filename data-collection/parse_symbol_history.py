@@ -1,17 +1,29 @@
 import boto3
 import datetime
 import requests
+from retrying import retry
 import json
 from common_funcs import get_soup
 from settings import API_KEY
 
 
+@retry(stop_max_attempt_number=5)
 def get_total_shares(symbol):
     url = 'https://www.nasdaq.com/symbol/%s/institutional-holdings' % symbol
     soup = get_soup(url)
     table = soup.find_all('table')[5]
     total_shares = int(table.find_all('td')[1].text.replace(',', '')) * 1000000
     return total_shares
+
+
+@retry(stop_max_attempt_number=5)
+def call_api(symbol):
+    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s'
+    url = url % (symbol.upper(), API_KEY)
+    json_content = json.loads(requests.get(url).content)
+    if 'Time Series (Daily)' not in json_content:
+        raise
+    return json_content
 
 
 def main(symbol, date):
@@ -28,9 +40,7 @@ def main(symbol, date):
     start_date = '%s-%s' % (start_year, quarter_date_mapping[start_dt.month // 3])
 
     total_shares = get_total_shares(symbol)
-    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s'
-    url = url % (symbol.upper(), API_KEY)
-    json_content = json.loads(requests.get(url).content)
+    json_content = call_api(symbol)
     output = []
     for d, history in json_content['Time Series (Daily)'].iteritems():
         if d > start_date and d <= date:
