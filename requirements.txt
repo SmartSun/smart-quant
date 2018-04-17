@@ -1,0 +1,3 @@
+retrying
+beautifulsoup4
+requests
