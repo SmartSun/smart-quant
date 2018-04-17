@@ -35,7 +35,7 @@ def main(symbol, date):
     for d, history in json_content['Time Series (Daily)'].iteritems():
         if d > start_date and d <= date:
             output.append('\t'.join([
-                d, history['1. open'], history['2. high'],
+                d, symbol, history['1. open'], history['2. high'],
                 history['3. low'], history['4. close'], history['5. volume'],
                 str(total_shares)
             ]))
