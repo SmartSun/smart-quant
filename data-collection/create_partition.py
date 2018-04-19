@@ -20,7 +20,7 @@ def lambda_handler(event, context):
     if key.startswith('symbol_history/'):
         date, symbol = key.split('/')[1:3]
         query = """
-            ALTER TABLE institutional_holdings
+            ALTER TABLE symbol_history
             ADD IF NOT EXISTS PARTITION
             (date_p='%(date)s', symbol_p='%(symbol)s')
             LOCATION 's3://smart-quant-data/symbol_history/%(date)s/%(symbol)s/'
