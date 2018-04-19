@@ -12,6 +12,6 @@ def lambda_handler(event, context):
     scraping_type = eb['type']
 
     if scraping_type == 'holdings':
-        parse_symbol_institutional_holdings_mainpage.main(symbol)
+        parse_symbol_institutional_holdings_mainpage.main(symbol, date)
     if scraping_type == 'history':
         parse_symbol_history.main(symbol, date)

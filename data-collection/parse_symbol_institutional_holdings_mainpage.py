@@ -15,7 +15,7 @@ def get_max_page(base_url):
     return max(pages)
 
 
-def main(symbol):
+def main(symbol, date):
     sns = boto3.client('sns')
     base_url = 'https://www.nasdaq.com/symbol/%s/institutional-holdings' % symbol
     max_page = get_max_page(base_url)
@@ -26,3 +26,8 @@ def main(symbol):
             TargetArn=arn,
             Message=json.dumps({'url': page_url, 'symbol': symbol})
         )
+
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket('smart-quant-data')
+    key = 'institutional_holdings/%s/%s/_SUCCESS' % (date, symbol)
+    bucket.put_object(Key=key, Body='')
