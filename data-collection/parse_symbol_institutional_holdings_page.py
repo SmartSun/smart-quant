@@ -9,7 +9,7 @@ from common_funcs import get_soup
 @retry(stop_max_attempt_number=5)
 def parse_page(url):
     soup = get_soup(url)
-    table = soup.find_all('table')[8]
+    table = soup.find_all('table')[5]
     for tr in table.find_all('tr'):
         tds = tr.find_all('td')
         if not tds:
